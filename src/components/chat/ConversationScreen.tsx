@@ -14,9 +14,10 @@ interface ConversationScreenProps {
   onBack: () => void;
   onSaveContact: (userId: string, name:string) => void;
   onStartCall: (type: 'audio' | 'video') => void;
+  onNavigateToChatInfo: () => void;
 }
 
-export const ConversationScreen: React.FC<ConversationScreenProps> = ({ chat, onBack, onSaveContact, onStartCall }) => {
+export const ConversationScreen: React.FC<ConversationScreenProps> = ({ chat, onBack, onSaveContact, onStartCall, onNavigateToChatInfo }) => {
   const [messages, setMessages] = useState<Message[]>(chat.messages);
   const [isTyping, setIsTyping] = useState(false);
   const [showQooPanel, setShowQooPanel] = useState(false);
@@ -100,16 +101,18 @@ export const ConversationScreen: React.FC<ConversationScreenProps> = ({ chat, on
           <button onClick={onBack} className="p-2 rounded-full hover:bg-paper dark:hover:bg-dark-background">
             <ArrowLeft size={20} className="text-text-primary dark:text-dark-text-primary" />
           </button>
-          <div className="relative">
-            <img src={avatar} alt={chatName} className="w-10 h-10 rounded-xl object-cover" />
-            {chat.type === 'private' && isOnline && <div className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-surface dark:border-dark-surface" />}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-text-primary dark:text-dark-text-primary truncate">{chatName}</h2>
-            <p className="text-xs text-text-muted dark:text-dark-text-muted">
-              {isUnsavedContact ? 'Tap to add to contacts' : chat.type === 'private' ? (isOnline ? 'Online' : 'Last seen recently') : chat.type === 'channel' ? `${chat.memberCount?.toLocaleString()} members` : `${chat.participants.length} members`}
-            </p>
-          </div>
+          <button onClick={onNavigateToChatInfo} className="flex-1 flex items-center space-x-3 min-w-0">
+            <div className="relative">
+              <img src={avatar} alt={chatName} className="w-10 h-10 rounded-xl object-cover" />
+              {chat.type === 'private' && isOnline && <div className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-surface dark:border-dark-surface" />}
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <h2 className="font-semibold text-text-primary dark:text-dark-text-primary truncate">{chatName}</h2>
+              <p className="text-xs text-text-muted dark:text-dark-text-muted">
+                {isUnsavedContact ? 'Tap to add to contacts' : chat.type === 'private' ? (isOnline ? 'Online' : 'Last seen recently') : chat.type === 'channel' ? `${chat.memberCount?.toLocaleString()} members` : `${chat.participants.length} members`}
+              </p>
+            </div>
+          </button>
           <div className="flex items-center space-x-1">
             <button onClick={() => onStartCall('audio')} className="p-2 rounded-full hover:bg-paper dark:hover:bg-dark-background"><Phone size={18} className="text-text-primary dark:text-dark-text-primary" /></button>
             <button onClick={() => onStartCall('video')} className="p-2 rounded-full hover:bg-paper dark:hover:bg-dark-background"><Video size={18} className="text-text-primary dark:text-dark-text-primary" /></button>

@@ -10,6 +10,7 @@ import { PrivacySettingsScreen } from './components/account/sub/PrivacySettingsS
 import { AppearanceSettingsScreen } from './components/account/sub/AppearanceSettingsScreen';
 import { NotificationsSettingsScreen } from './components/account/sub/NotificationsSettingsScreen';
 import { HelpSettingsScreen } from './components/account/sub/HelpSettingsScreen';
+import { ChatInfoScreen } from './components/chat/ChatInfoScreen';
 import { Chat, User, CallLog } from './types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { mockUsers, mockChats, mockCallLogs } from './data/mockData';
@@ -24,7 +25,8 @@ type AppView =
   | 'privacySettings'
   | 'appearanceSettings'
   | 'notificationsSettings'
-  | 'helpSettings';
+  | 'helpSettings'
+  | 'chatInfo';
 
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>('chatList');
@@ -53,12 +55,18 @@ const App: React.FC = () => {
       setStoryUser(null);
     } else if (['accountSettings', 'privacySettings', 'appearanceSettings', 'notificationsSettings', 'helpSettings'].includes(view)) {
       setView('account');
+    } else if (view === 'chatInfo') {
+      setView('conversation');
     }
   };
 
   const handleNavigateToAccount = () => {
     setView('account');
   };
+  
+  const handleNavigateToChatInfo = () => {
+    setView('chatInfo');
+  }
 
   const handleNavigateToSettingsSubPage = (page: AppView) => {
     setView(page);
@@ -115,6 +123,7 @@ const App: React.FC = () => {
               onBack={handleBack}
               onSaveContact={handleSaveContact}
               onStartCall={(type) => handleStartCall(selectedChat, type)}
+              onNavigateToChatInfo={handleNavigateToChatInfo}
             />
           </motion.div>
         );
@@ -138,6 +147,12 @@ const App: React.FC = () => {
         return storyUser && (
           <motion.div key="story-viewer" className="w-full" {...screenAnimation}>
             <StoryViewer user={storyUser} onClose={handleBack} />
+          </motion.div>
+        );
+      case 'chatInfo':
+        return selectedChat && (
+          <motion.div key="chat-info" {...screenAnimation}>
+            <ChatInfoScreen chat={selectedChat} onBack={handleBack} />
           </motion.div>
         );
       case 'accountSettings':

@@ -25,7 +25,8 @@ export interface Message {
   timestamp: Date;
   senderId: string;
   status: 'sent' | 'delivered' | 'read';
-  type?: 'text' | 'voice' | 'poll' | 'system' | 'call';
+  type?: 'text' | 'voice' | 'poll' | 'system' | 'call' | 'image';
+  imageUrl?: string;
   voiceData?: {
     duration: number;
     transcript?: string;

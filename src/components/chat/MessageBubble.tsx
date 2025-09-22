@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Check, CheckCheck, Pin, Play, BarChart3, Phone, Video, PhoneIncoming, PhoneOutgoing, PhoneMissed, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { Check, CheckCheck, Pin, Play, BarChart3, Phone, Video, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { Message } from '../../types';
 
 interface MessageBubbleProps {
@@ -64,6 +64,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, sh
     switch (message.type) {
       case 'call':
         return renderCallMessage();
+      case 'image':
+        return (
+          <div className="relative">
+            <img src={message.imageUrl} alt="Shared media" className="rounded-lg max-w-full h-auto" />
+            {message.text && (
+              <div className={`absolute bottom-0 left-0 right-0 p-2 text-white bg-gradient-to-t from-black/60 to-transparent ${isOwn ? '' : 'text-white'}`}>
+                <p className="text-sm">{message.text}</p>
+              </div>
+            )}
+          </div>
+        );
       case 'voice':
         return (
           <div className="flex items-center space-x-3 min-w-0">
@@ -115,7 +126,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, sh
       {!isOwn && showAvatar && avatar && (<img src={avatar} alt="Avatar" className="w-8 h-8 rounded-lg object-cover" />)}
       {!isOwn && !showAvatar && <div className="w-8" />}
       <div className={`max-w-xs lg:max-w-md ${isOwn ? 'ml-auto' : ''}`}>
-        <motion.div whileHover={{ scale: 1.02 }} className={`px-4 py-2 rounded-2xl shadow-soft relative ${isOwn ? 'bg-wooqoo-primary text-white rounded-br-md' : 'bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary rounded-bl-md border border-paper dark:border-dark-background'}`}>
+        <motion.div whileHover={{ scale: 1.02 }} className={`rounded-2xl shadow-soft relative ${isOwn ? 'bg-wooqoo-primary text-white rounded-br-md' : 'bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary rounded-bl-md border border-paper dark:border-dark-background'} ${message.type === 'image' ? 'p-1.5' : 'px-4 py-2'}`}>
           {message.isPinned && (<div className="absolute -top-2 -right-2"><div className="w-5 h-5 bg-wooqoo-coral rounded-full flex items-center justify-center"><Pin size={10} className="text-white" /></div></div>)}
           {renderMessageContent()}
           {message.voiceData?.transcript && (<div className="mt-2 pt-2 border-t border-white/20"><p className="text-xs opacity-75 italic">"{message.voiceData.transcript}"</p></div>)}

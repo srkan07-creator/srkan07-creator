@@ -68,7 +68,7 @@ const voiceNotes = [
 // Create mock messages with various types
 const createMockMessages = (participants: User[]): Message[] => {
   const messages: Message[] = [];
-  const messageCount = faker.number.int({ min: 8, max: 25 });
+  const messageCount = faker.number.int({ min: 15, max: 30 });
   let lastTimestamp = faker.date.recent({ days: 7 });
 
   for (let i = 0; i < messageCount; i++) {
@@ -76,8 +76,9 @@ const createMockMessages = (participants: User[]): Message[] => {
     lastTimestamp = new Date(lastTimestamp.getTime() + faker.number.int({ min: 1000, max: 3600000 }));
     
     const messageType = faker.helpers.weightedArrayElement([
-      { weight: 0.6, value: 'text' },
-      { weight: 0.15, value: 'voice' },
+      { weight: 0.5, value: 'text' },
+      { weight: 0.15, value: 'image' },
+      { weight: 0.1, value: 'voice' },
       { weight: 0.1, value: 'poll' },
       { weight: 0.15, value: 'call' },
     ]);
@@ -90,7 +91,14 @@ const createMockMessages = (participants: User[]): Message[] => {
       isPinned: faker.datatype.boolean(0.05),
     };
 
-    if (messageType === 'voice' && sender.id !== 'unsaved-user-1') {
+    if (messageType === 'image') {
+      messages.push({
+        ...baseMessage,
+        text: faker.datatype.boolean(0.3) ? faker.lorem.sentence() : '',
+        type: 'image',
+        imageUrl: faker.image.urlLoremFlickr({ width: 400, height: 300, category: 'abstract' }),
+      });
+    } else if (messageType === 'voice' && sender.id !== 'unsaved-user-1') {
       const voiceNote = faker.helpers.arrayElement(voiceNotes);
       messages.push({
         ...baseMessage, text: '', type: 'voice', voiceData: { ...voiceNote, audioUrl: `https://audio-sample.com/${faker.string.uuid()}.mp3` },
