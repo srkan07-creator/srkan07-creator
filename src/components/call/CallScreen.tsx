@@ -33,7 +33,7 @@ export const CallScreen: React.FC<CallScreenProps> = ({ chat, type, onEndCall })
   }, []);
 
   return (
-    <div className="w-full max-w-md mx-auto h-screen flex flex-col bg-dark-background text-white relative">
+    <div className="w-full h-full flex flex-col bg-dark-background text-white relative">
       {/* Background Video/Image */}
       <AnimatePresence>
         {type === 'video' && !isCameraOff && (

@@ -26,7 +26,7 @@ export const ChatInfoScreen: React.FC<ChatInfoScreenProps> = ({ chat, onBack }) 
   const mediaMessages = chat.messages.filter(m => m.type === 'image').slice(-9);
 
   return (
-    <div className="w-full max-w-md mx-auto h-screen flex flex-col bg-paper dark:bg-dark-background">
+    <div className="w-full h-full flex flex-col bg-paper dark:bg-dark-background">
       <header className="p-4 sticky top-0 bg-paper/80 dark:bg-dark-background/80 backdrop-blur-sm z-10">
         <div className="flex items-center space-x-3">
           <button onClick={onBack} className="p-2 rounded-full hover:bg-surface dark:hover:bg-dark-surface">

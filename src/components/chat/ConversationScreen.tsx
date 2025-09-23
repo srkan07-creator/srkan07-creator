@@ -95,7 +95,7 @@ export const ConversationScreen: React.FC<ConversationScreenProps> = ({ chat, on
   };
 
   return (
-    <div className="w-full max-w-md mx-auto h-screen flex flex-col bg-surface dark:bg-dark-surface">
+    <div className="w-full h-full flex flex-col bg-surface dark:bg-dark-surface">
       <header className="p-4 border-b border-paper dark:border-dark-background/50 bg-surface dark:bg-dark-surface z-10">
         <div className="flex items-center space-x-3">
           <button onClick={onBack} className="p-2 rounded-full hover:bg-paper dark:hover:bg-dark-background">

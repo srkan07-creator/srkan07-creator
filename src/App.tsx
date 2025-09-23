@@ -11,11 +11,19 @@ import { AppearanceSettingsScreen } from './components/account/sub/AppearanceSet
 import { NotificationsSettingsScreen } from './components/account/sub/NotificationsSettingsScreen';
 import { HelpSettingsScreen } from './components/account/sub/HelpSettingsScreen';
 import { ChatInfoScreen } from './components/chat/ChatInfoScreen';
+import { WelcomeScreen } from './components/auth/WelcomeScreen';
+import { SignInScreen } from './components/auth/SignInScreen';
+import { SignUpScreen } from './components/auth/SignUpScreen';
+import { OnboardingScreen } from './components/auth/OnboardingScreen';
 import { Chat, User, CallLog } from './types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { mockUsers, mockChats, mockCallLogs } from './data/mockData';
 
 type AppView = 
+  | 'welcome'
+  | 'signIn'
+  | 'signUp'
+  | 'onboarding'
   | 'chatList' 
   | 'conversation' 
   | 'account' 
@@ -29,7 +37,8 @@ type AppView =
   | 'chatInfo';
 
 const App: React.FC = () => {
-  const [view, setView] = useState<AppView>('chatList');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [view, setView] = useState<AppView>('welcome');
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [callType, setCallType] = useState<'audio' | 'video' | null>(null);
   const [storyUser, setStoryUser] = useState<User | null>(null);
@@ -38,6 +47,24 @@ const App: React.FC = () => {
   const [chats, setChats] = useState<Chat[]>(mockChats);
   const [callLogs, setCallLogs] = useState<CallLog[]>(mockCallLogs);
 
+  // --- Auth Handlers ---
+  const handleSignInSuccess = (isNewUser = false) => {
+    setIsAuthenticated(true);
+    setView(isNewUser ? 'onboarding' : 'chatList');
+  };
+
+  const handleCompleteOnboarding = () => {
+    setView('chatList');
+  };
+
+  const handleSignOut = () => {
+    setIsAuthenticated(false);
+    setView('welcome');
+  };
+
+  const navigateTo = (targetView: AppView) => setView(targetView);
+
+  // --- Main App Handlers ---
   const handleChatSelect = (chat: Chat) => {
     setSelectedChat(chat);
     setView('conversation');
@@ -48,7 +75,7 @@ const App: React.FC = () => {
       setView('chatList');
       setSelectedChat(null);
     } else if (view === 'call') {
-      setView('conversation'); // Go back to chat after a call
+      setView('conversation');
       setCallType(null);
     } else if (view === 'storyViewer') {
       setView('chatList');
@@ -81,7 +108,6 @@ const App: React.FC = () => {
   const handleViewStories = (user: User) => {
     setStoryUser(user);
     setView('storyViewer');
-    // Mark stories as read
     setUsers(prev => prev.map(u => u.id === user.id ? { ...u, hasUnreadStories: false } : u));
   };
 
@@ -114,10 +140,24 @@ const App: React.FC = () => {
   };
 
   const renderContent = () => {
+    if (!isAuthenticated) {
+      switch (view) {
+        case 'signIn':
+          return <motion.div key="signIn" {...screenAnimation} className="w-full h-full"><SignInScreen onSignIn={() => handleSignInSuccess()} onNavigateToSignUp={() => navigateTo('signUp')} /></motion.div>;
+        case 'signUp':
+          return <motion.div key="signUp" {...screenAnimation} className="w-full h-full"><SignUpScreen onSignUp={() => handleSignInSuccess(true)} onNavigateToSignIn={() => navigateTo('signIn')} /></motion.div>;
+        case 'onboarding':
+          return <motion.div key="onboarding" {...screenAnimation} className="w-full h-full"><OnboardingScreen onComplete={handleCompleteOnboarding} /></motion.div>;
+        case 'welcome':
+        default:
+          return <motion.div key="welcome" {...screenAnimation} className="w-full h-full"><WelcomeScreen onNavigateToSignIn={() => navigateTo('signIn')} onNavigateToSignUp={() => navigateTo('signUp')} onSocialSignIn={() => handleSignInSuccess(true)} /></motion.div>;
+      }
+    }
+
     switch (view) {
       case 'conversation':
         return selectedChat && (
-          <motion.div key="conversation" className="w-full" {...screenAnimation}>
+          <motion.div key="conversation" className="w-full h-full" {...screenAnimation}>
             <ConversationScreen
               chat={selectedChat}
               onBack={handleBack}
@@ -129,13 +169,13 @@ const App: React.FC = () => {
         );
       case 'account':
         return (
-          <motion.div key="account" className="w-full" {...screenAnimation}>
-            <AccountScreen onBack={handleBack} onNavigate={handleNavigateToSettingsSubPage} />
+          <motion.div key="account" className="w-full h-full" {...screenAnimation}>
+            <AccountScreen onBack={handleBack} onNavigate={handleNavigateToSettingsSubPage} onSignOut={handleSignOut} />
           </motion.div>
         );
       case 'call':
         return selectedChat && callType && (
-          <motion.div key="call" className="w-full" {...screenAnimation}>
+          <motion.div key="call" className="w-full h-full" {...screenAnimation}>
             <CallScreen
               chat={selectedChat}
               type={callType}
@@ -145,30 +185,30 @@ const App: React.FC = () => {
         );
       case 'storyViewer':
         return storyUser && (
-          <motion.div key="story-viewer" className="w-full" {...screenAnimation}>
+          <motion.div key="story-viewer" className="w-full h-full" {...screenAnimation}>
             <StoryViewer user={storyUser} onClose={handleBack} />
           </motion.div>
         );
       case 'chatInfo':
         return selectedChat && (
-          <motion.div key="chat-info" {...screenAnimation}>
+          <motion.div key="chat-info" className="w-full h-full" {...screenAnimation}>
             <ChatInfoScreen chat={selectedChat} onBack={handleBack} />
           </motion.div>
         );
       case 'accountSettings':
-        return <motion.div key="account-settings" {...screenAnimation}><AccountSettingsScreen onBack={handleBack} /></motion.div>;
+        return <motion.div key="account-settings" className="w-full h-full" {...screenAnimation}><AccountSettingsScreen onBack={handleBack} /></motion.div>;
       case 'privacySettings':
-        return <motion.div key="privacy-settings" {...screenAnimation}><PrivacySettingsScreen onBack={handleBack} /></motion.div>;
+        return <motion.div key="privacy-settings" className="w-full h-full" {...screenAnimation}><PrivacySettingsScreen onBack={handleBack} /></motion.div>;
       case 'appearanceSettings':
-        return <motion.div key="appearance-settings" {...screenAnimation}><AppearanceSettingsScreen onBack={handleBack} /></motion.div>;
+        return <motion.div key="appearance-settings" className="w-full h-full" {...screenAnimation}><AppearanceSettingsScreen onBack={handleBack} /></motion.div>;
       case 'notificationsSettings':
-        return <motion.div key="notifications-settings" {...screenAnimation}><NotificationsSettingsScreen onBack={handleBack} /></motion.div>;
+        return <motion.div key="notifications-settings" className="w-full h-full" {...screenAnimation}><NotificationsSettingsScreen onBack={handleBack} /></motion.div>;
       case 'helpSettings':
-        return <motion.div key="help-settings" {...screenAnimation}><HelpSettingsScreen onBack={handleBack} /></motion.div>;
+        return <motion.div key="help-settings" className="w-full h-full" {...screenAnimation}><HelpSettingsScreen onBack={handleBack} /></motion.div>;
       case 'chatList':
       default:
         return (
-          <motion.div key="chat-list" className="w-full" {...screenAnimation}>
+          <motion.div key="chat-list" className="w-full h-full" {...screenAnimation}>
             <ChatListScreen
               chats={chats}
               users={users}
@@ -184,7 +224,7 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-paper dark:bg-dark-background flex justify-center">
+      <div className="h-screen w-screen bg-paper dark:bg-dark-background flex flex-col">
         <AnimatePresence mode="wait">
           {renderContent()}
         </AnimatePresence>
@@ -194,9 +234,9 @@ const App: React.FC = () => {
 };
 
 const screenAnimation = {
-  initial: { opacity: 0, scale: 0.95 },
-  animate: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 0.95 },
+  initial: { opacity: 0, x: 30 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -30 },
   transition: { duration: 0.3, ease: 'easeInOut' },
 };
 

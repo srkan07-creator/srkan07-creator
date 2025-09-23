@@ -65,7 +65,7 @@ export const ChatListScreen: React.FC<ChatListScreenProps> = ({ chats, users, ca
   };
 
   return (
-    <div className="w-full max-w-md mx-auto h-screen flex flex-col bg-surface dark:bg-dark-surface shadow-md">
+    <div className="w-full h-full flex flex-col bg-surface dark:bg-dark-surface relative">
       {/* Header */}
       <header className="p-4 border-b border-paper dark:border-dark-background/50 sticky top-0 bg-surface dark:bg-dark-surface z-10">
         <div className="flex justify-between items-center mb-4">
@@ -123,7 +123,7 @@ export const ChatListScreen: React.FC<ChatListScreenProps> = ({ chats, users, ca
       
       {/* FAB */}
       {(activeTab === 'chats' || activeTab === 'contacts') && (
-        <div className="absolute bottom-6 right-6">
+        <div className="absolute bottom-6 right-6 z-20">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}

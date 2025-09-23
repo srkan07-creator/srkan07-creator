@@ -1,12 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ChevronRight, KeyRound, Shield, Bell, Palette, CircleHelp, Users, QrCode, Camera } from 'lucide-react';
+import { ArrowLeft, ChevronRight, KeyRound, Shield, Bell, Palette, CircleHelp, Users, QrCode, Camera, LogOut } from 'lucide-react';
 import { mockUsers } from '../../data/mockData';
-import { AppView } from '../../App'; // Assuming AppView is exported from App.tsx or a types file
 
 interface AccountScreenProps {
   onBack: () => void;
   onNavigate: (page: 'accountSettings' | 'privacySettings' | 'appearanceSettings' | 'notificationsSettings' | 'helpSettings') => void;
+  onSignOut: () => void;
 }
 
 const currentUser = mockUsers.find(u => u.id === 'current-user')!;
@@ -19,9 +19,9 @@ const settingsItems = [
   { id: 'helpSettings', icon: CircleHelp, label: 'Help', sublabel: 'Help center, contact us, privacy policy', color: 'bg-orange-500' },
 ];
 
-export const AccountScreen: React.FC<AccountScreenProps> = ({ onBack, onNavigate }) => {
+export const AccountScreen: React.FC<AccountScreenProps> = ({ onBack, onNavigate, onSignOut }) => {
   return (
-    <div className="w-full max-w-md mx-auto h-screen flex flex-col bg-paper dark:bg-dark-background">
+    <div className="w-full h-full flex flex-col bg-paper dark:bg-dark-background">
       <header className="p-4 border-b border-paper dark:border-dark-background/50 sticky top-0 bg-paper dark:bg-dark-background z-10">
         <div className="flex items-center space-x-3">
           <button onClick={onBack} className="p-2 rounded-full hover:bg-surface dark:hover:bg-dark-surface">
@@ -81,13 +81,19 @@ export const AccountScreen: React.FC<AccountScreenProps> = ({ onBack, onNavigate
 
         <div className="h-2 bg-paper dark:bg-dark-surface" />
         
-        {/* Invite a Friend */}
+        {/* Invite a Friend & Sign Out */}
         <div className="py-2">
            <button className="w-full flex items-center px-4 py-3 hover:bg-surface dark:hover:bg-dark-surface transition-colors text-left">
              <div className="p-2 rounded-lg bg-wooqoo-coral">
                 <Users size={18} className="text-white" />
              </div>
              <span className="flex-1 ml-4 font-medium text-base">Invite a friend</span>
+           </button>
+           <button onClick={onSignOut} className="w-full flex items-center px-4 py-3 hover:bg-surface dark:hover:bg-dark-surface transition-colors text-left">
+             <div className="p-2 rounded-lg bg-error">
+                <LogOut size={18} className="text-white" />
+             </div>
+             <span className="flex-1 ml-4 font-medium text-base text-error">Sign Out</span>
            </button>
         </div>
         
